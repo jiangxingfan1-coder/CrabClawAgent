@@ -1,141 +1,189 @@
 <div align="center">
 
-<!-- 请将下方的 src 链接替换为你自己的 Logo 图片地址，可以使用相对路径如 assets/logo.png，或者完整的 http 链接 -->
+<img src="crab claw logo%201.0.png" width="400" alt="CrabClaw Logo">
 
-<img src="https://www.google.com/search?q=https://via.placeholder.com/150/000000/FFFFFF/%3Ftext%3DCrabClaw" width="150" alt="CrabClaw Logo">
+<h1><strong>🦀 CrabClaw</strong></h1>
 
-🦀 CrabClaw
+<h2>商业级全自主实体智能体引擎 | Pro Max<br>Commercial-Grade Fully Autonomous Embodied Agent Engine | Pro Max</h2>
 
-智能体 (Agent) 引擎 @CrabClaw.AI
-
-商业级全自主实体智能体引擎 | Pro Max
-让算力在你本地沸腾，将执行力交还给终端。
-
-CrabClaw 是一个运行在本地环境中的全自主学习型实体执行中枢，拒绝空谈，专注本地执行与跨脑协同。
-
-🌐 项目主页 · 📚 官方文档 · 🐛 提交 Issue
+[🇨🇳 简体中文](#简体中文) | [🇺🇸 English](#english)
 
 </div>
 
-📖 中文介绍
+---
 
-🎯 愿景与初衷
+<h2 id="简体中文">🇨🇳 简体中文</h2>
 
-CrabClaw 绝对不是云端的闲聊机器人（Chatbot），而是一个具备物理级操作权限的实体执行中枢。它采用“引擎逻辑”与“交互终端”严格解耦的架构，致力于在保障绝对商业安全的前提下，赋予大模型直接接管本地宿主环境、自我编写技能并进化的能力。
+**致力于推动前沿智能体技术的演进，CrabClaw 是一个高性能、全自主的主动型多模态实体智能体架构，专为应对复杂任务与专业开发场景而打造。**
 
-核心哲学：遇到未知的任务？不要只给方案。CrabClaw 会主动搜索、编写代码、丢进隔离沙箱测试，甚至唤醒副脑协同处理，直接交付最终结果。
+🛡️ **商业级稳定** · 🧠 **架构突破** · 🚀 **原生执行**
 
-✨ 核心能力与架构解析
+### 🔥 CrabClaw v2.0 纪元：多脑协同集群架构
 
-这是 CrabClaw 区别于普通套壳项目的五大底层硬核架构：
+基于对系统资源与并发调度的深度优化，CrabClaw v2.0 正式跃迁为 **跨模态多脑协同集群 (Multi-Brain Synergy Engine)**，实现了底层架构的全面突破：
 
-1. 🧠 主副脑跨脑协同 (Sub-Brain Delegation)
+* **🧠 跨模态多脑协同网络 (`delegate_to_sub_brain`)：** 主脑具备全局任务统筹能力。当纯文本主脑遭遇视觉等多模态任务时，能自动调度集群池中的专用副脑节点处理并提交报告，支持多模型异构协同与负载均衡。
+* **🛡️ 内核级零信任 Docker 沙箱 (`DockerSandboxEngine`)：** 引入物理级隔离环境。全面应用 Cgroups 资源精细调控与只读 (`mode='ro'`) 文件系统挂载，保障宿主机环境绝对安全，同时通过队列守护线程完美解决复杂依赖安装时的并发与阻塞难题。
+* **🌌 高效上下文语义压缩器 (`MemoryCompactor`)：** 告别超长上下文导致的内存溢出风险。系统基于实时 Token 嗅探，在触发阈值时自动启动语义压缩机制，并将核心关键信息持久化至本地 (`SOUL.md`)，实现跨周期的连贯记忆复用与智能体状态保存。
+* **⚙️ 工业级底层容错装甲 (`_robust_json_parse` & `_sanitize_messages`)：** 极大提升了对非标准大模型输出的兼容性。内置 AST 容错解析与历史链路清洗器，有效避免接口异常中断，保障系统在长时间运行中的极高稳定性与自我纠错能力。
 
-打破单一模型的算力与模态瓶颈。主脑可根据任务复杂度，自动将子任务外包给异构集群。
+> [!NOTE]
+> CrabClaw 不仅是一个对话模型，而是一个具备环境感知和物理级执行能力的实体中枢。它被设计为能够在授权范围内高效调度本地计算资源、自动编写并执行代码。为了充分发挥其自动化效能并保障数据隔离，推荐在沙箱、容器或独立开发环境中运行。
 
-视觉与复杂演算外包：遇到图片解析或超长文本时，自动调用 delegate_to_sub_brain 唤醒专长副脑（如专精视觉的模型）。
+### ✨ 核心能力与架构解析
 
-集群热切换：无缝配置多个异构模型（OpenAI/DeepSeek/Anthropic），主脑宕机或陷入幻觉时，系统将强制剥离其权限并热切换至备用节点。
+CrabClaw 的核心设计理念在于 **高度模块化解耦** 与 **极致的执行效能**：
 
-2. 🛡️ 双擎安全沙箱 (Dual Sandbox System)
+#### 1. 🧠 主副脑任务委派 (Sub-Brain Delegation)
+CrabClaw 采用双层高并发架构，确保高维逻辑思考与底层任务执行的高效运转。
+* **主脑 (Main Brain):** 负责全局战略规划、高维逻辑推理与长周期记忆整合，具备极强的任务拆解与调度能力。
+* **副脑 (Sub Brain):** 负责极速的本地代码执行、工具调用与实时传感器输入，极低延迟且高机动性，可直接在本地终端运行。
 
-原生硬编码的底层防护，彻底解决 AI 生成代码反噬宿主的安全隐患。
+#### 2. 🛡️ 双重安全沙箱 (Dual Sandbox System)
+为了保障自动化任务的可靠执行，架构内置了两种级别的安全隔离策略。
 
-in_process 轻量沙箱：极速运行，自动拦截 os, sys, subprocess 等高危底层库调用，保障基础安全。
+| 沙箱模式 | 操作权限限制 | 隔离级别 | 应用场景 |
+| :--- | :--- | :--- | :--- |
+| 🟢 **基础安全模式** | 默认拦截底层高权限库调用 | 严格 | 数据处理、逻辑计算、文本生成 |
+| 🔵 **容器执行模式** | 允许文件系统操作与网络通信 | 物理隔离 | 复杂环境依赖构建、自动化测试、脚本执行 |
 
-isolated_process 物理隔离（Pro Max专属）：独立物理进程运行高危代码，自带 Timeout 超时熔断机制，从根源上防止 AI 写出死循环炸毁宿主机内存。
+#### 3. 🗄️ 混合记忆中枢 (Hybrid Memory Core)
+引入多维度记忆状态机机制，实现智能体生命周期的长期数据管理。
 
-3. 💾 企业级混合记忆中枢 (Hybrid Memory Core)
+| 记忆维度 | 底层支持 | 核心作用 | 更新机制 |
+| :--- | :--- | :--- | :--- |
+| **核心记忆 (Core Memory)** | 知识图谱 & 关键状态机 | 锚定智能体核心指令、关键业务逻辑与项目全景图 | 常驻内存，基于重大状态变更进行热更新 |
+| **情景记忆 (Episodic Memory)** | 向量检索 (RAG) | 记录执行轨迹、系统上下文与历史交互日志 | 周期性滚动清理，用于短期规划复盘 |
 
-抛弃脆弱易损的 JSON 文件存储，引入工业级数据库架构，赋予智能体真正的“长期灵魂”。
+#### 4. ⚡ 动态技能进化引擎 (Dynamic Skill Engine)
+智能体不再受限于预设工具，能够根据任务目标动态编写、验证并挂载新技能代码。
 
-SQLite WAL 引擎：开启 Write-Ahead Logging 模式，完美支撑高并发读写，防止记忆数据撕裂。
+| 核心技能 (Tool) | 运行环境 | 安全评级 | 功能描述 |
+| :--- | :--- | :--- | :--- |
+| `run_python_skill` | 独立 Python 环境 | ⚠️ **需授权** | 动态编写脚本处理复杂非结构化任务，具备强大的计算延展性 |
+| `sandbox_cmd_skill` | 容器化隔离环境 | 🟢 **安全** | 提供底层终端命令执行权限，用于环境配置与深度 Debug |
+| `web_search` | 结构化网络环境 | 🟢 **安全** | 实时获取互联网最新数据流并进行深度语义总结 |
 
-双态记忆分离：Core Memory（核心记忆）用于刻印人格与全局指令；Episodic Memory（情景记忆）用于高维度 FTS5 全文检索引擎，实现超长上下文溯源。
+### 🚀 快速入门 (Quick Start)
+全平台支持 Windows / macOS / Linux。推荐在 Python 3.10+ 环境下运行。
 
-4. 🧬 动态技能进化引擎 (Dynamic Skill Engine)
-
-智能体不再受限于开发者预设的代码，它拥有自主编写、热重载并永久植入新技能的权限。
-
-自动补全依赖：检测到技能缺失第三方库（如 Pillow, OpenCV）时，自动触发环境检测并执行 pip install 自我修复。
-
-AST 语法树审查：技能植入前必须经过底层抽象语法树（AST）扫描，杜绝恶意代码潜伏。
-
-5. 💻 深度宿主接管与 HITL 防线
-
-原生系统控制：支持执行终端 Shell 脚本、异步唤醒本地 GUI 软件及打开网页。
-
-HITL (Human-in-the-loop) 授权：最高安全级别的商业阻断。任何高危命令（如 rm -rf, 格式化）必须被拦截，并在终端强制要求人类/网关输入 y 授权。
-
-🚀 极速部署 (Quick Start)
-
-全平台支持 Windows / macOS / Linux，仅需三步即可唤醒你的本地中枢。
-
-第一步：克隆仓库与依赖安装
-
-# 1. 将项目核心代码克隆至本地
-git clone [https://github.com/YourUsername/CrabClaw.git](https://github.com/YourUsername/CrabClaw.git)
+**1. 克隆仓库与初始化**
+在您的工作目录中执行以下命令完成初始化构建：
+```bash
+git clone --depth 1 [https://github.com/YourUsername/CrabClaw.git](https://github.com/YourUsername/CrabClaw.git)
 cd CrabClaw
+./init_env.sh --model-crab-subcd CrabClaw
+```
 
-# 2. 安装底层通讯与请求依赖
-pip install openai httpx
+**2. 安装核心依赖引擎**
+```bash
+pip install -r requirements.txt
+```
 
+**3. 启动中枢核心**
+```bash
+python core_engine/brain_main.py
+```
+*(系统初始化期间，请按照终端引导输入您的 API Key 与接口配置。)*
 
-第二步：点火启动
+**> 交互终端就绪**
+当出现 `CrabClaw >` 提示符后，即可输入您的指令，体验全自动化的任务流转引擎。
 
-直接运行引擎中枢，首次启动会自动进入配置引导。
-
-python src/crabclaw_core.py
-
-
-提示：按终端提示填入你的 API Key 与 Base URL (默认预设为完美兼容 DeepSeek 的接口配置)。
-
-第三步：体验“效率模式”
-
-在交互终端对 CrabClaw 发送指令：
-
-"开启效率模式"
-
-(引擎将在确认为低风险任务时，跳过繁琐的人类授权，开启真正的全自动静默执行与自我纠错！)
-
-📂 系统目录与空间映射
-
-当 CrabClaw 首次启动后，将自动在根目录生成高维工作区：
-
+### 📁 核心架构映射
+CrabClaw 运行时的内部工程树状结构如下：
+```text
 CrabClaw/
-├── src/
-│   └── crabclaw_core.py      # 核心逻辑与引擎中枢 (唯一核心)
-├── workspace/                # 智能体独立工作区 (自动生成)
-│   ├── hybrid_memory.db      # SQLite WAL 记忆数据库核心
-│   ├── SOUL.md               # 智能体核心人格与出厂设定
-│   ├── skills/               # 智能体自主进化的 Python 技能库
-│   └── .sandbox_env/         # 物理隔离沙箱的临时处决区
-├── config.json               # 本地集群配置 (自动生成，已加入 .gitignore)
-└── README.md                 # 您正在阅读的文档
+├── core/
+│   └── brain_main.py      # 核心中枢调度引擎 (主入口)
+├── architecture/          # 架构核心组件库
+│   ├── hybrid_memory.py   # 混合记忆引擎实现
+│   ├── sub_brain.py       # 副脑任务接口与执行逻辑
+│   └── skills/            # 动态技能热加载目录
+├── sandbox_env/           # 容器化物理隔离区
+├── memory_pool/           # 记忆持久化数据库 (SQLite / VectorDB)
+└── README.md              # 官方技术文档
+```
 
+### 🛡️ 为什么选择 CrabClaw？
+CrabClaw 致力于探索智能体技术的性能极限与工程落地。它为追求极致执行效率与高度自动化的开发者提供了一套强大且灵活的底层引擎。无论是打造个人专属的 AI 效率助手，还是构建复杂的自动化业务流，CrabClaw 都能提供卓越的底层支撑。
 
-🛡️ 商业级安全白皮书
+### 🤝 接入与二次开发
+CrabClaw 天生采用高扩展性的模块化设计。通过继承重写 `BaseChannel` 适配器，您可以轻松将其接入任何企业内部系统或通讯应用（如微信、飞书、钉钉、Discord 等）。
 
-我们深知赋予 AI 本地执行权限的潜在破坏力，CrabClaw 在底层构筑了叹息之墙：
-
-防代码溢出屏显：自动折叠模型产生的冗长代码与 JSON 数据，保障你的 IM/社交平台排版不被刷屏卡死。
-
-防死锁与反幻觉干预：模型若连续多次陷入逻辑死循环或“光说不做”的幻觉，底层循环器将触发强杀，自动回滚或切换大脑。
-
-ANSI 终端重构：底层通过 ctypes 强切 Windows 内核级 VT100 与 UTF-8 编码，彻底消灭控制台乱码与报错撕裂。
-
-🤝 接入与二次开发
-
-CrabClaw 天生为拓展而生。核心代码中的 BaseChannel 类是为开发者预留的网关协议。
-你只需继承并重写 BaseChannel，即可在极短时间内将 CrabClaw 无缝接入 微信、钉钉、Discord、Telegram 或你的专属前端 Vue/React UI 项目中。
-
-欢迎提交 Pull Request，一起构建最强本地实体 Agent！
+欢迎提交 Pull Request，共同打造性能最强劲的开源实体智能体中枢！
 
 <div align="center">
-<i>「世界是一个巨大的草台班子，但你的 Agent 不是。」</i>
 
+<i>「生为探索数字生命的极限，星海，扬帆起航！」</i><br>
+<b>CrabClaw Engine © 2024-Present</b>
 
+</div>
 
+---
 
-<b>CrabClaw Engine &copy; 2024-Present</b>
+<h2 id="english">🇺🇸 English</h2>
+
+**Dedicated to advancing frontier Agent technology, CrabClaw is a high-performance, fully autonomous embodied agent architecture, built specifically for complex tasks and professional development scenarios.**
+
+🛡️ **Commercial Stability** · 🧠 **Architectural Breakthrough** · 🚀 **Native Execution**
+
+### 🔥 CrabClaw v2.0 Epoch: Multi-Brain Synergy Architecture
+
+Based on deep optimization of system resources and concurrent scheduling, CrabClaw v2.0 officially upgrades to the **Multi-Brain Synergy Engine**, achieving comprehensive breakthroughs in the underlying architecture:
+
+* **🧠 Cross-Modal Synergy Network (`delegate_to_sub_brain`):** The main brain possesses global task orchestration capabilities. When a text-based main brain encounters multimodal tasks like vision, it automatically dispatches specialized sub-brain nodes from the cluster pool to process and submit reports, supporting heterogeneous model synergy and load balancing.
+* **🛡️ Kernel-Level Zero-Trust Sandbox (`DockerSandboxEngine`):** Introduces a physical-level isolated environment. Fully implements Cgroups fine-grained resource control and read-only (`mode='ro'`) file system mounts, ensuring absolute host security while perfectly solving concurrency blocking issues during complex dependency installations via daemon threads.
+* **🌌 Efficient Context Compactor (`MemoryCompactor`):** Eliminates OOM risks caused by ultra-long contexts. Based on real-time Token sniffing, the system automatically triggers a semantic compression mechanism when reaching thresholds, and persists core critical info to local storage (`SOUL.md`), achieving continuous memory reuse across sessions.
+* **⚙️ Industrial-Grade Fault-Tolerant Armor (`_robust_json_parse` & `_sanitize_messages`):** Massively improves compatibility with non-standard LLM outputs. Built-in AST fault-tolerant parsing and history link sanitizers effectively prevent interface interruptions, ensuring extremely high stability and self-correction during long-running tasks.
+
+> [!NOTE]
+> CrabClaw is not just a chat model, but an embodied hub with environmental awareness and physical execution capabilities. It is designed to efficiently schedule local compute resources and automatically write/execute code within authorized boundaries. To fully utilize its automation potential and ensure data isolation, it is highly recommended to run it in a sandbox, container, or isolated development environment.
+
+### ✨ Core Capabilities & Architectural Analysis
+
+CrabClaw's core design philosophy lies in **highly modular decoupling** and **extreme execution efficiency**:
+
+#### 1. 🧠 Sub-Brain Task Delegation
+CrabClaw utilizes a dual-layer high-concurrency architecture, ensuring efficient operation of both high-dimensional logical reasoning and low-level task execution.
+
+#### 2. 🛡️ Dual Sandbox System
+To ensure the reliable execution of automated tasks, the architecture features built-in tiered security isolation policies ranging from basic library interception to fully containerized physical isolation.
+
+#### 3. 🗄️ Hybrid Memory Core
+Introduces a multi-dimensional memory state machine mechanism to manage the agent's long-term data over its lifecycle, combining Knowledge Graphs for Core Memory and Vector Retrieval (RAG) for Episodic Memory.
+
+#### 4. ⚡ Dynamic Skill Engine
+The agent is no longer limited to pre-set tools; it can dynamically write, verify, and mount new skill codes based on task objectives, effortlessly utilizing tools like `run_python_skill`, `sandbox_cmd_skill`, and structured `web_search`.
+
+### 🚀 Quick Start
+Fully supports Windows / macOS / Linux. Python 3.10+ is recommended.
+
+**1. Clone & Initialize**
+```bash
+git clone --depth 1 [https://github.com/YourUsername/CrabClaw.git](https://github.com/YourUsername/CrabClaw.git)
+cd CrabClaw
+./init_env.sh --model-crab-subcd CrabClaw
+```
+
+**2. Install Core Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+**3. Launch Core Hub**
+```bash
+python core_engine/brain_main.py
+```
+*(During initialization, please follow the terminal prompts to configure your API keys.)*
+
+### 🤝 Access & Secondary Development
+CrabClaw is inherently designed with high-extensibility modularity. By extending the `BaseChannel` adapter, you can easily integrate it into any enterprise system or communication application. 
+
+Welcome to submit Pull Requests to jointly build the most powerful open-source embodied agent engine!
+
+<div align="center">
+
+<i>"Born to explore the limits of digital life, to the sea of stars, set sail!"</i><br>
+<b>CrabClaw Engine © 2024-Present</b>
+
 </div>
