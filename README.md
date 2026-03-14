@@ -2,7 +2,7 @@
 
 <!-- Logo 图片，已关联到你仓库中的 蟹爪标志 1.0.png -->
 
-<img src="crab claw logo%201.0.png" width="150" alt="CrabClaw Logo">
+<img src="crab claw logo%201.0.png" width="400" alt="CrabClaw Logo">
 
 🦀 CrabClaw
 
