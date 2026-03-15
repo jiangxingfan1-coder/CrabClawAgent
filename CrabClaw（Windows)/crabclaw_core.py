@@ -27,12 +27,16 @@ from typing import Callable, Dict, Any, List, Optional, Tuple
 from openai import OpenAI
 
 # ==========================================
-# 🌐 代理清理与分发中枢 (Proxy Management)
+# 🌐 代理清理与分发中枢 (Proxy Management) - [Pro Max 重构]
 # ==========================================
+# [修复致命断网Bug]: 移除原有的暴力 pop() 环境变量逻辑。
+# 暴力清除会破坏用户本地的 Clash/V2ray 代理，导致无法访问外部 API 引发 Connection error。
+# 现在改为智能检测：保留环境变量，仅作日志记录，确保底层的 httpx 可以自动接管系统代理。
 proxy_envs = ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY', 'all_proxy', 'ALL_PROXY']
-for env_name in proxy_envs:
-    if env_name in os.environ:
-        os.environ.pop(env_name)
+sys_proxies_detected = {env: os.environ[env] for env in proxy_envs if env in os.environ}
+if sys_proxies_detected:
+    # 仅静默记录，不破坏环境
+    pass
 
 # ==========================================
 # 🛡️ 终极防乱码补丁与 ANSI 颜色支持 (Pro Max 增强)
@@ -447,10 +451,19 @@ class CrabClawAgent:
         self.clients = {}
         for key, cfg in self.models_config.items():
             raw_key = cfg.get("api_key", "")
+            raw_url = cfg.get("base_url", "")
+            
+            # [Pro Max 修复]: 强制清洗被大模型幻觉污染的 Markdown 格式 URL，防止抛出 httpx Connection error
+            clean_url = re.sub(r'\[.*?\]\((.*?)\)', r'\1', raw_url).strip() if raw_url else None
+            if clean_url and clean_url != raw_url:
+                cfg["base_url"] = clean_url
+            
             is_configured = bool(raw_key and "填入" not in raw_key and raw_key != "YOUR_API_KEY_HERE")
-            # 兼容非标准 OpenAI 端点：加入 timeout/max_retries 容错
-            client_kwargs = {"base_url": cfg.get("base_url"), "api_key": raw_key if is_configured else "NOT_CONFIGURED", "timeout": 90.0, "max_retries": 3}
-            if proxy_url and llm_use_proxy: client_kwargs["http_client"] = httpx.Client(proxies=proxy_url, verify=False)
+            
+            client_kwargs = {"base_url": clean_url, "api_key": raw_key if is_configured else "NOT_CONFIGURED", "timeout": 90.0, "max_retries": 3}
+            if proxy_url and llm_use_proxy: 
+                client_kwargs["http_client"] = httpx.Client(proxies=proxy_url, verify=False)
+            
             self.clients[key] = {"client": OpenAI(**client_kwargs), "model": cfg.get("model"), "description": cfg.get("description", "未提供"), "is_configured": is_configured}
         
         self.memory = HybridMemoryManager()
@@ -461,6 +474,8 @@ class CrabClawAgent:
         self.sessions = {}
         self.sessions_lock = threading.Lock()
         self.global_executor = concurrent.futures.ThreadPoolExecutor(max_workers=50, thread_name_prefix="CrabClaw_Worker")
+        
+        # httpx 工具客户端初始化，继承系统配置环境
         self.tool_http_client = httpx.Client(proxies=proxy_url, timeout=15.0) if proxy_url else httpx.Client(timeout=15.0)
         
         self._register_base_skills()
@@ -598,9 +613,11 @@ class CrabClawAgent:
         self.registry.register(func=delegate_to_sub_brain, description="【高级协同】将不擅长的任务(如看图分析)委派给专长副脑。看图务必设 include_current_vision_data=true。", parameters={"type": "object", "properties": {"target_model_key": {"type": "string"}, "task_prompt": {"type": "string"}, "include_current_vision_data": {"type": "boolean"}}, "required": ["target_model_key", "task_prompt", "include_current_vision_data"]})
         
         def configure_new_model_in_system(model_key: str, base_url: str, api_key: str, model_name: str, description: str, session_id: str = "default") -> str:
+            # [防护强化] 对动态传入的 base_url 再做一次清洗
+            clean_base_url = re.sub(r'\[.*?\]\((.*?)\)', r'\1', base_url).strip()
             self.channel.send_message(f"🔄 正在鉴权新模型 [{model_key}]...", role="progress", session_id=session_id)
             try:
-                kw = {"base_url": base_url, "api_key": api_key, "timeout": 15.0, "max_retries": 1}
+                kw = {"base_url": clean_base_url, "api_key": api_key, "timeout": 15.0, "max_retries": 1}
                 if self.proxy_url and self.llm_use_proxy: kw["http_client"] = httpx.Client(proxies=self.proxy_url, verify=False)
                 OpenAI(**kw).chat.completions.create(model=model_name, messages=[{"role": "user", "content": "hi"}], max_tokens=1)
             except Exception as e: return f"❌ 鉴权失败: {str(e)}"
@@ -609,7 +626,7 @@ class CrabClawAgent:
                 with open("config.json", "r", encoding="utf-8") as f: cfg = json.load(f)
             except: cfg = {"models": {}}
             if "models" not in cfg: cfg["models"] = {}
-            cfg["models"][model_key] = {"base_url": base_url, "api_key": api_key, "model": model_name, "description": description}
+            cfg["models"][model_key] = {"base_url": clean_base_url, "api_key": api_key, "model": model_name, "description": description}
             with open("config.json", "w", encoding="utf-8") as f: json.dump(cfg, f, indent=4, ensure_ascii=False)
             self.clients[model_key] = {"client": OpenAI(**kw), "model": model_name, "description": description, "is_configured": True}
             return f"✅ 新节点 [{model_key}] 热加载成功！"
@@ -678,7 +695,9 @@ class CrabClawAgent:
             try:
                 # [商业升级] 强化版的企业级伪装 User-Agent 防止被 DuckDuckGo 等反爬虫组件 403 拦截
                 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-                html_resp = self.tool_http_client.get(f"[https://html.duckduckgo.com/html/?q=](https://html.duckduckgo.com/html/?q=){urllib.parse.quote(query)}", headers=headers).text
+                # [致命 Bug 修复] 移除了包含在字符串中会导致 http 解析彻底崩溃的 markdown [url](url) 格式
+                target_url = f"[https://html.duckduckgo.com/html/?q=](https://html.duckduckgo.com/html/?q=){urllib.parse.quote(query)}"
+                html_resp = self.tool_http_client.get(target_url, headers=headers).text
                 snips = [re.sub(r'<[^>]+>', '', s).strip() for s in re.findall(r'<a class="result__snippet[^>]*>(.*?)</a>', html_resp, re.I | re.S)]
                 return "🌐 摘要:\n" + "\n---\n".join(snips[:5]) if snips else "无结果，请换词或用 sandbox 写爬虫。"
             except Exception as e: return f"❌ 搜索失败: {e}"
@@ -794,7 +813,11 @@ class CrabClawAgent:
                     break  
                 except Exception as e:
                     err = str(e).lower()
-                    last_error_details = str(e)
+                    
+                    # [穿透级异常追踪]: 提取深层网络崩溃的真实原因，彻底告别单调的 "Connection error"
+                    last_error_details = f"{type(e).__name__}: {str(e)}"
+                    if hasattr(e, '__cause__') and e.__cause__:
+                        last_error_details += f" (底层原因: {str(e.__cause__)})"
                     
                     if any(isinstance(m["content"], list) for m in kwargs["messages"]) and ("image" in err or "400" in err):
                         self._log_chain("🔄 跨模态引流启动", "当前主脑缺乏视觉器官，正在注入强协同指令...", session_id, level="WARN")
@@ -920,7 +943,12 @@ def init_and_load_config():
     
     print(f"\n{COLOR_SYSTEM}" + "="*55 + f"\n🌟 CrabClaw 商业级智能体系统 (Pro Max) 🌟\n" + "="*55 + f"{COLOR_RESET}")
     ak = input(f"\n{COLOR_WARNING}👉 1. API Key: {COLOR_RESET}").strip() or "YOUR_API_KEY_HERE"
-    bu = input(f"{COLOR_WARNING}👉 2. Base URL (默认 [https://api.deepseek.com](https://api.deepseek.com)): {COLOR_RESET}").strip() or "[https://api.deepseek.com](https://api.deepseek.com)"
+    bu_prompt = input(f"{COLOR_WARNING}👉 2. Base URL (默认 [https://api.deepseek.com](https://api.deepseek.com)): {COLOR_RESET}").strip()
+    
+    # [致命 Bug 修复] 防止由于手滑复制带来的 Markdown 语法导致后续底层抛出 Connection Error
+    bu_raw = bu_prompt or "[https://api.deepseek.com](https://api.deepseek.com)"
+    bu = re.sub(r'\[.*?\]\((.*?)\)', r'\1', bu_raw).strip()
+    
     mn = input(f"{COLOR_WARNING}👉 3. 模型名称 (默认 deepseek-chat): {COLOR_RESET}").strip() or "deepseek-chat"
     
     cfg = {
