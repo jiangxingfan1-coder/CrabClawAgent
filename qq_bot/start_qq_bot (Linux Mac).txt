@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' 
+
+echo -e "${BLUE}===================================================${NC}"
+echo ""
+echo -e "         🦀 CrabClaw QQ 机器人总线"
+echo -e "             [Linux/Mac 服务器守护版]"
+echo ""
+echo -e "${BLUE}===================================================${NC}"
+echo -e "[提示] 建议使用 tmux/screen 或 nohup 将其挂在云服务器后台。"
+echo -e "[状态] 🛡️ 异常崩溃自愈与断网重连机制已激活。"
+echo ""
+
+cd "$(dirname "$0")" || { echo -e "${RED}❌ 无法定位目录！${NC}"; exit 1; }
+
+if command -v python3 &>/dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &>/dev/null; then
+    PYTHON_CMD="python"
+else
+    echo -e "${RED}❌ 未检测到 Python，请先安装。${NC}"
+    exit 1
+fi
+
+if [ ! -f "crabclaw.py" ] || [ ! -f "run_qq_bot.py" ]; then
+    echo -e "${RED}❌ 核心文件缺失！${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}[系统自检]${NC} 验证通信库..."
+$PYTHON_CMD -c "import openai, httpx, botpy" &>/dev/null
+if [ $? -ne 0 ]; then
+    echo -e "${YELLOW}⚠️ 安装 botpy 等通信库中...${NC}"
+    PIP_CMD="$PYTHON_CMD -m pip"
+    $PIP_CMD install --user qq-botpy openai httpx -i https://mirrors.aliyun.com/pypi/simple/ || $PIP_CMD install --user qq-botpy openai httpx --break-system-packages -i https://pypi.tuna.tsinghua.edu.cn/simple
+    echo -e "${GREEN}✅ 安装完成！${NC}"
+fi
+
+export PYTHONIOENCODING=utf-8
+
+while true; do
+    echo -e "\n${GREEN}🔄 唤醒引擎并拉取腾讯网关...${NC}\n"
+    
+    $PYTHON_CMD run_qq_bot.py
+    
+    echo -e "\n${YELLOW}===================================================${NC}"
+    echo -e "${YELLOW}⚠️ 进程断开。${NC}"
+    echo -e "${YELLOW}🔄 守护机制触发，5秒后重启... (Ctrl+C 彻底终止)${NC}"
+    echo -e "${YELLOW}===================================================${NC}\n"
+    sleep 5
+done
